@@ -13,5 +13,7 @@ namespace arg_parse
 	const std::vector<std::string>& input_files();
 	const std::string& output_file();
 	const std::string& query_string();
+	bool recursive();
+	const unsigned int n_threads();
 
 };

@@ -2,10 +2,20 @@
 #include <filesystem>
 #include <queue>
 #include "arg_parse.h"
+#include "file_processor.h"
+#include "thread_pool.h"
 
 namespace fs = std::filesystem;
 namespace ap = arg_parse;
+namespace fp = file_processor;
 
+template<typename DirItr>
+DirItr getDirectoryIterator(fs::path& file)
+{
+	if (ap::recursive())
+		return fs::recursive_directory_iterator(file);
+	return fs::directory_iterator(file);
+}
 
 int main(int argc, char* argv[])
 {
@@ -17,29 +27,17 @@ int main(int argc, char* argv[])
 	{
 		std::cerr << ex.what() << "\n";
 		std::cerr << "usage: app [-d/--directory] <dir-path> [-q/--query] <query-string> "
-			<< "[-o(-fo)/--output(--force-output) <text output path>]\n";
+			<< "[-o(-fo)/--output(--force-output)] <text output path> [-r/--recursive]\n";
 			
 	}
-	std::queue<fs::path> file_queue;
+	ThreadPool pool(ap::n_threads());
 	for(const auto &file : ap::input_files())
 	{
-		fs::path file_path(file);
-		if(is_directory(file_path))
+		if(fs::is_directory(file))
 		{
-			for(auto &itr: fs::recursive_directory_iterator(file_path))
-			{
-				/*
-				 *TODO: way to decide whether or not the file is a text file
-				 *regardless of extension
-				 */
-				if(itr.path().extension()==".txt")
-				{
-					file_queue.push(itr.path());
-				}
-			}
+			fp::process_directory(file, pool);
 		}
 	}
-
 
 	return 0;
 }

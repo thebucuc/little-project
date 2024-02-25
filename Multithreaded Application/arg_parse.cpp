@@ -1,7 +1,5 @@
 #include "arg_parse.h"
 
-
-
 std::vector<std::string> _input_files;
 std::string _query_string;
 std::string _output_file;
@@ -9,6 +7,8 @@ bool _directory_selected = false;
 bool _query_provided = false;
 bool _output_provided = false;
 bool _force_output = false;
+bool _recursive = false;
+unsigned int _threads = std::thread::hardware_concurrency();
 
 void arg_parse::parse(int argc,char *argv[])
 {
@@ -23,6 +23,16 @@ void arg_parse::parse(int argc,char *argv[])
 				throw std::runtime_error("app: cannot use -d or --directory twice");
 			}
 			_directory_selected = true;
+			continue;
+		}
+
+		if (arg == "-r" || arg == "--recursive")
+		{
+			if (_recursive)
+			{
+				throw std::runtime_error("app: cannot use -r or --recursive twice");
+			}
+			_recursive = true;
 			continue;
 		}
 
@@ -88,6 +98,9 @@ void arg_parse::parse(int argc,char *argv[])
 			if (!std::filesystem::exists(arg)) {
 				throw std::runtime_error(std::string("app: the provided directory does not exist: ")+arg);
 			}
+			if (!std::filesystem::is_directory(arg)) {
+				throw std::runtime_error(std::string("app: the provided path is not a directory: ") + arg);
+			}
 			_input_files.push_back(arg);
 		}
 	}
@@ -111,5 +124,14 @@ const std::string& arg_parse::output_file()
 const std::string& arg_parse::query_string()
 {
 	return _query_string;
+}
+
+const unsigned int arg_parse::n_threads()
+{
+	return _threads;
+}
+bool arg_parse::recursive()
+{
+	return _recursive;
 }
 
