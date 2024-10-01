@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	{
 		if(fs::is_directory(file))
 		{
-			fp::process_directory(file, pool);
+			fp::process_directory((std::filesystem::path)file, pool);
 		}
 	}
 

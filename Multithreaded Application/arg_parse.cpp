@@ -1,3 +1,5 @@
+#include <thread>
+#include <filesystem>
 #include "arg_parse.h"
 
 std::vector<std::string> _input_files;

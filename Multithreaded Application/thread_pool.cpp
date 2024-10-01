@@ -1,5 +1,6 @@
 #include "thread_pool.h"
 #include "file_processor.h"
+#include  <thread>
 namespace fp = file_processor;
 ThreadPool::ThreadPool(size_t threads) : stop(false)
 {

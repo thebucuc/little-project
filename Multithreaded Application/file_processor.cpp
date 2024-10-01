@@ -1,9 +1,14 @@
 #include "file_processor.h"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 namespace ap = arg_parse;
 namespace fs = std::filesystem;
 void file_processor::process(const std::filesystem::path& file)
 {
-
+	std::fstream filep;
+	filep.open(file,std::fstream::in);
+	
 }
 
 void file_processor::process_directory(const std::filesystem::path& file, ThreadPool& pool)
@@ -16,9 +21,9 @@ void file_processor::process_directory(const std::filesystem::path& file, Thread
 			 *TODO: way to decide whether or not the file is a text file
 			 *regardless of extension
 			 */
-			if (itr.path().extension() == ".txt")
+			if (itr.path().extension() == ".cpp")
 			{
-				pool.push(itr.path());
+				std::cout<< itr.path().filename()<< "\n";
 			}
 		}
 	}
@@ -30,7 +35,7 @@ void file_processor::process_directory(const std::filesystem::path& file, Thread
 			 *TODO: way to decide whether or not the file is a text file
 			 *regardless of extension
 			 */
-			if (itr.path().extension() == ".txt")
+			if (itr.path().extension() == ".cpp")
 			{
 				pool.push(itr.path());
 			}
